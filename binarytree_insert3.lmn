@@ -1,0 +1,29 @@
+/*
+	node(parent, item, left, right) <=> node(P, Y, L, R)
+	X and Y are number.
+	nil is empty node.
+	P is parent and C is child.
+*/
+
+function = {
+	// initialize
+	head(nil).
+	// insert function 
+	insert(X), head(Y) :- head(insert(X,Y)).
+	insert(X, C, P), node(C, Y, L, R) :- X < Y | insert(X, L, C), node(P, Y, C, R), .
+	insert(X, C, P), node(C, Y, L, R) :- X >= Y | insert(X, R, C), node(P, Y, L, C).
+	insert(X, nil, P) :- node(P, X, nil, nil).
+}.
+
+// pre-processing for serial execution
+inputlist=[],function={$p, @rule}/ :- $p, @rule.
+
+inputlist=[insert(N)|T],function={$p, @rule}/ :- int(N) | inputlist=T, function={$p,insert(N),@rule}.
+
+
+// input string (function, atom , ... etc)
+inputlist = [
+	insert(1),
+	insert(2),
+	insert(3)
+].
