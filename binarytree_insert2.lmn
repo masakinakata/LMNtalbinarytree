@@ -1,0 +1,23 @@
+/*
+	node(parent, item, left, right) <=> node(P, Y, L, R)
+	X and Y are number.
+	nil is empty node.
+	P is parent and C is child.
+*/
+
+// initialize
+head(nil),t.
+
+// insert function 
+insert(X), head(Y) :- head(insert(X,Y)).
+insert(X, C, P), node(C, Y, L, R) :- X < Y | insert(X, L, C), node(P, Y, C, R), .
+insert(X, C, P), node(C, Y, L, R) :- X >= Y | insert(X, R, C), node(P, Y, L, C).
+insert(X, nil, P) :- node(P, X, nil, nil),t.
+
+
+// execution list
+insertlist=[H|T] ,t:- insert(H),insertlist=T.
+insertlist=[] ,t:-.
+
+// input number to insert
+insertlist=[1,2,3].
