@@ -1,0 +1,60 @@
+/*
+	node(parent, item, left, right) <=> node(P, Y, L, R)
+	X and Y are number.
+	nil is empty node.
+	P is parent and C is child.
+*/
+
+function = {
+	// initialize
+	head(nil).
+	// insert function 
+	insert(X), head(Y) :- head(insert(X,Y)).
+	insert(X, C, P), node(C, Y, L, R) :- X < Y | insert(X, L, C), node(P, Y, C, R), .
+	insert(X, C, P), node(C, Y, L, R) :- X >= Y | insert(X, R, C), node(P, Y, L, C).
+	insert(X, nil, P) :- node(P, X, nil, nil).
+	
+	search(X), head(Y) :- head(search(X,Y)).
+	search(X, C, P), node(C, Y, L, R) :- X < Y | search(X, L, C), node(P, Y, C, R).
+	search(X, C, P), node(C, Y, L, R) :- X > Y | search(X, R, C), node(P, Y, L, C).
+	search(X, C, P), node(C, Y, L, R) :- X =:= Y | node(P, Y, L, R), true(X).
+	search(X, nil, P) :- nil(P),false(X).
+}.
+
+// pre-processing for serial execution
+exec.
+inputlist=[],exec, function={$p, @rule}/ :- $p, @rule.
+seqlist=[],function={$p, @rule}/ :- exec,function={$p, @rule}.
+inputlist=[seqlist=H|T2],exec, function={$p, @rule}/ :- seqlist=H, inputlist=T2, function={$p, @rule}.
+
+
+// parallel process execution
+inputlist=[insert(N)|T],function={$p, @rule},exec :- int(N) | inputlist=T, function={$p, insert(N), @rule},exec.
+inputlist=[search(N)|T],function={$p, @rule},exec :- int(N) | inputlist=T, function={$p, search(N), @rule},exec.
+
+// serial process execution
+seqlist=[insert(N)|T], function={$p, @rule}/ :- int(N) | seqlist=T, function={$p, insert(N), @rule}.
+seqlist=[search(N)|T], function={$p, @rule}/ :- int(N) | seqlist=T, function={$p, search(N), @rule}.
+
+
+// input string (function, atom , ... etc)
+inputlist = [
+	seqlist=[
+		insert(10),
+		insert(2),
+		insert(38),
+		insert(13),
+		insert(6),
+		insert(1)
+	],
+	search(2),
+	search(3),
+	search(4),
+	seqlist=[
+		insert(3),
+		insert(4),
+		insert(12)
+	],
+	search(3),
+	search(4)
+].
