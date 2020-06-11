@@ -15,8 +15,8 @@ function = {
 	insert(X, C, P), node(C, Y, L, R, V) :- X >= Y | insert(X, R, C), node(P, Y, L, C, V).
 	insert(X, nil, P) :- node(P, X, nil, nil, red), rotation.
 	
-	rotation, head(Y), rotate = {$p, @rule} :- ground(Y) | rotate = {$p, @rule, head(Y)}, rotation.
-	rotation, rotate={$p,@rule}/ :- $p, rotate={@rule}.
+	rotation, head(Y), rotate = {$p, @rule} :- ground(Y) | rotate = {$p, @rule, head(Y)}, rotation_done.
+	rotation_done, rotate={$p,@rule}/ :- $p, rotate={@rule}.
 	node(head,X,L,R,red) :- node(head,X,L,R,black).
 	rotate = {
 		node(P, X, L, R, black), node(L, Y, L1, R1, red), node(L1, Z, L2, R2, red) :-
