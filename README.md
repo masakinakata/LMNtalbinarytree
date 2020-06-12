@@ -17,3 +17,6 @@ deleteを増やした。deleteも逐次実行, ルール数が少し多くなっ
 
 ## red_black_tree.lmn
 赤黒木の作成段階. 現在insert部分を実装中.
+
+## binarytree.tex
+explanation of binarytree implementation. in preparation
