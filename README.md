@@ -1,5 +1,8 @@
 # LMNtalbinarytree
 
+## test
+パターンマッチングのテスト用ディレクトリ.
+
 ## binarytree_insert1.lmn
 insertlistに含まれる数を非決定的に選んで木にinsertする
 
