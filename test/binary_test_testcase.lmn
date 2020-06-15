@@ -1,0 +1,17 @@
+// initialize
+head(nil).
+a.
+output={}.
+// insert function 
+a, insert(X), head(Y):- b, head(insert(X,Y)).
+b, insert(X, C, P), node(C, Y, L, R) :- X < Y | b, insert(X, L, C), node(P, Y, C, R), .
+b, insert(X, C, P), node(C, Y, L, R) :- X >= Y | b, insert(X, R, C), node(P, Y, L, C).
+b, insert(X, nil, P) :- a, node(P, X, nil, nil).
+
+insert(1).
+insert(3).
+insert(4).
+insert(5).
+insert(6).
+insert(14).
+insert(8).
