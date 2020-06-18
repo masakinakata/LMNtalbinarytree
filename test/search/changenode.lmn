@@ -1,0 +1,33 @@
+// initialize
+head(nil). 
+output={}.
+// insert function 
+insert(X), head(Y) :- head(insert(X,Y)).
+node(C, Y, L, R), insert(X, C, P) :- X < Y | insert(X, L, C), node(P, Y, C, R), .
+node(C, Y, L, R), insert(X, C, P):- X >= Y | insert(X, R, C), node(P, Y, L, C).
+insert(X, nil, P) :- node(P, X, nil, nil).
+
+/*
+// search function
+
+search(X), head(Y) :- head(search(X,Y)).
+node(C, Y, L, R), search(X, C, P):- X < Y | search(X, L, C), node(P, Y, C, R).
+node(C, Y, L, R), search(X, C, P) :- X > Y | search(X, R, C), node(P, Y, L, C).
+node(C, Y, L, R), search(X, C, P), output={$p, @rule} :- X =:= Y, int(X)| node(P, Y, L, R), output={$p, @rule, true_search(X)}.
+search(X, nil, P), output={$p, @rule} :- int(X) | nil(P), output={$p, @rule, false_search(X)}.
+
+
+// delete function
+
+delete(X), head(Y) :- head(delete(X,Y)).
+node(C, Y, L, R), delete(X, C, P) :- X < Y | delete(X, L, C), node(P, Y, C, R).
+node(C, Y, L, R), delete(X, C, P):- X > Y | delete(X, R, C), node(P, Y, L, C).
+node(C, Y, nil, nil), delete(X, C, P), output={$p, @rule} :- X =:= Y, int(X)| nil(P),output={$p, @rule, true_delete(X)}.
+node(C, Y, L, nil), node(L, Z, L1, R1),delete(X, C, P), output={$p, @rule} :- X =:= Y, int(X) | node(P, Z, L1, R1), output={$p, @rule, true_delete(X)}.
+node(C, Y, nil, R), node(R, Z, L1, R1), delete(X, C, P), output={$p, @rule} :- X =:= Y, int(X) | node(P, Z, L1, R1), output={$p, @rule, true_delete(X)}.
+node(R, W, L2, R2), node(C, Y, L, R), node(L, Z, L1, R1),delete(X, C, P):- X =:=Y | delete_changer(P, Y, L, R), node(L, Z, L1, R1), delete_min(R, W, L2, R2).
+node(C, Y, L1, R1), delete_changer(P, X, L, R), delete_min(L1, Z, nil, R2), output={$p, @rule} :- int(X)| node(P, Z, L, R), node(C, Y, R2, R1), output={$p, @rule, true_delete(X)}.
+delete_changer(P, X, L, R), delete_min(R, Y, nil, R2), output={$p, @rule} :- int(X) | node(P, Y, L, R2), output={$p, @rule, true_delete(X)}.
+node(L, Y, L1, R1), delete_min(P, X, L, R):- node(P, X, L, R), delete_min(L, Y, L1, R1).
+delete(X,nil,P), output={$p, @rule} :- int(X) | nil(P), output={$p, @rule, false_delete(X)}.
+*/
