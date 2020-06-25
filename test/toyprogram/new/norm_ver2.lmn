@@ -1,0 +1,58 @@
+binarytree = {
+// initialize
+head(nil, 1).
+head(nil, 0).
+output={}.
+// insert function
+insert(X), head(Y, F) :- (X - F) mod 2 == 0 | head(insert(X,Y), F).
+insert(X, C, P), node(C, Y, L, R) :- X < Y | insert(X, L, C), node(P, Y, C, R).
+insert(X, C, P), node(C, Y, L, R) :- X > Y | insert(X, R, C), node(P, Y, L, C).
+insert(X, C, P), node(C, Y, L, R) :- X == Y | node(P, Y, L, R).
+insert(X, nil, P) :- node(P, X, nil, nil).
+}.
+
+/* I/O */ 
+main. start = time.gettime.
+main :-
+  io.read_token(io.stdin, I, S),
+  loop(S, eof, I, io.stdout).
+
+// first input is "insert" or "search" or "delete"
+loop(S, EOF, I, O) :- S == EOF |
+  io.free_port(I), io.free_port(O), endtime.
+loop(S0, EOF, I0, O0) :- S0 \== EOF |
+  opcode = S0,
+  io.print_line(O0,S0,O),
+  io.read_token(I0, I, S),
+  loop_number(S, EOF, I, O).
+
+// second input must be number.
+loop_number(S, EOF, I, O) :- S == EOF |
+  io.free_port(I), io.free_port(O), endtime.
+loop_number(S0, EOF, I0, O0), opcode(X) :- S0 \== EOF |
+  opcode(X, integer.of_str(S0)),
+  io.print_line(O0,S0,O),
+  io.read_token(I0, I, S),
+  loop(S, EOF, I, O).
+
+// these atoms are for change token to atom
+op_insert("insert"), op_search("search"), op_delete("delete").
+
+// change "insert" and number N -> insert(N) and so on.
+op_insert(X), opcode(Y, N), binarytree = {$p, @rule} :-
+	        X = Y , int(N)
+	      | op_insert(X), binarytree = {$p, @rule, insert(N)}.
+op_search(X), opcode(Y, N), binarytree = {$p, @rule} :-
+	        X = Y , int(N)
+	      | op_search(X), binarytree = {$p, @rule, search(N)}.
+op_delete(X), opcode(Y, N), binarytree = {$p, @rule} :-
+	        X = Y, int(N)
+	      | op_delete(X), binarytree = {$p, @rule, delete(N)}.
+
+// wrong input should be deleted.
+fail(X) :- ground(X) | io.print_line(io.stdout, "error", io.stdout).
+
+
+// time schedule
+endtime, binarytree = {$p, @rule}/ :- end = time.gettime, $p, @rule.
+start(Time_start), end(Time_end) :- Time = Time_end -. Time_start | time(Time).
