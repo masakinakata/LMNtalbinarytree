@@ -1,0 +1,134 @@
+output={}.
+// insert function
+insert_left @@
+insert(X, C, P), node(C, Y, L, R) :- X < Y | insert(X, L, C), node(P, Y, C, R).
+insert_right @@
+insert(X, C, P), node(C, Y, L, R) :- X > Y | insert(X, R, C), node(P, Y, L, C).
+insert_equal @@
+insert(X, C, P), node(C, Y, L, R) :- X == Y | node(P, Y, L, R).
+insert_end @@ 
+insert(X, nil, P) :- node(P, X, nil, nil).
+
+// search function
+search_left @@
+search(X, C, P), node(C, Y, L, R) :- X < Y | search(X, L, C), node(P, Y, C, R).
+search_right @@
+search(X, C, P), node(C, Y, L, R) :- X > Y | search(X, R, C), node(P, Y, L, C).
+true_search @@ 
+search(X, C, P), node(C, Y, L, R), output={$p, @rule} :-
+	  X =:= Y, int(X)
+	  | node(P, Y, L, R), output={$p, @rule, true_search(X)}.
+false_search @@ 
+search(X, nil, P), output={$p, @rule} :- int(X) | nil(P), output={$p, @rule, false_search(X)}.
+	
+// delete function
+delete_left @@
+delete(X, C, P), node(C, Y, L, R) :- X < Y | delete(X, L, C), node(P, Y, C, R).
+delete_right @@
+delete(X, C, P), node(C, Y, L, R) :- X > Y | delete(X, R, C), node(P, Y, L, C).
+delete(X, C, P), node(C, Y, nil, nil), output={$p, @rule}
+	  :- X =:= Y, int(X)
+	  | nil(P),output={$p, @rule, true_delete(X)}.
+delete(X, C, P), node(C, Y, L, nil), node(L, Z, L1, R1), output={$p, @rule} :-
+	  X =:= Y, int(X)
+	  | node(P, Z, L1, R1), output={$p, @rule, true_delete(X)}.
+delete(X, C, P), node(C, Y, nil, R), node(R, Z, L1, R1), output={$p, @rule} :-
+	  X =:= Y, int(X)
+	  | node(P, Z, L1, R1), output={$p, @rule, true_delete(X)}.
+delete(X, C, P), node(C, Y, L, R), node(L, Z, L1, R1), node(R, W, L2, R2) :-
+	  X =:=Y
+	  | delete_changer(P, Y, L, R), node(L, Z, L1, R1), delete_min(R, W, L2, R2).
+delete_changer(P, X, L, R), node(C, Y, L1, R1), delete_min(L1, Z, nil, R2), output={$p, @rule} :-
+		  int(X)
+		  | node(P, Z, L, R), node(C, Y, R2, R1), output={$p, @rule, true_delete(X)}.
+delete_changer(P, X, L, R), delete_min(R, Y, nil, R2), output={$p, @rule} :-
+		  int(X)
+		  | node(P, Y, L, R2), output={$p, @rule, true_delete(X)}.
+delete_min(P, X, L, R), node(L, Y, L1, R1) :-
+	      node(P, X, L, R), delete_min(L, Y, L1, R1).
+false_delete @@ 
+delete(X,nil,P), output={$p, @rule} :-
+		 int(X)
+		 | nil(P), output={$p, @rule, false_delete(X)}.
+
+/* I/O
+ * main is like int main() { .... }
+*/ 
+
+main.
+main :-
+  io.read_token(io.stdin, I, S),
+  tree_even = nil,
+  tree_odd = nil,
+  loop_for_number(S, I).
+
+// cin << n; for(int i = 0; i < n; i++) ....
+loop_for_number @@
+loop_for_number(S0, I0) :-
+		    io.read_token(I0, I, S),
+		    loop(S, integer.of_str(S0), I),
+		    jump_loop.
+
+// first input is "insert" or "search" or "delete"
+loop_end @@ 
+jump_loop, loop(S0, N, I0) :- N == 0, ground(S0) | io.free_port(I0).
+loop_first @@
+jump_loop, loop(S0, N, I0) :-
+  	   opcode = S0,
+  	   io.read_token(I0, I, S),
+  	   loop_number(S, N, I).
+
+// second input must be number.
+loop_second @@
+loop_number(S0, N, I0), opcode(X) :- N1 = N - 1 |
+		   opcode(X, integer.of_str(S0)),
+  		   io.read_token(I0, I, S),
+  		   loop(S, N1, I).
+
+// these atoms are for changing token to atom
+op_insert("insert"), op_search("search"), op_delete("delete").
+
+// change "insert" and number N -> insert(N) and so on.
+// switch { case : ... default: ...}
+execution_insert_even @@
+op_insert(P), opcode(Q, X), tree_even = Y :-
+	      P = Q, X mod 2 == 0
+	      | op_insert(P), tree_even = insert(X, Y), jump_loop.
+execution_insert_odd @@
+op_insert(P), opcode(Q, X), tree_odd = Y :-
+	      P = Q, X mod 2 \== 0
+	      | op_insert(P), tree_odd = insert(X, Y), jump_loop.
+
+execution_search_even @@	      
+op_search(P), opcode(Q, X), tree_even = Y :-
+	      P = Q, X mod 2 == 0
+	      | op_search(P), tree = search(X, Y), jump_loop.
+execution_search_odd @@
+op_search(P), opcode(Q, X), tree_odd = Y :-
+	      P = Q, X mod 2 \== 0
+	      | op_search(P), tree_odd = search(X, Y), jump_loop.
+
+execution_delete_even @@	      
+op_delete(P), opcode(Q, X), tree_even(Y) :-
+	      P = Q, X mod 2 == 0
+	      | op_delete(P), tree_even = delete(X, Y), jump_loop.
+execution_delete_odd @@
+op_delete(P), opcode(Q, X), tree_odd = (Y) :-
+	      P = Q, X mod 2 \== 0
+	      | op_delete(P), tree_odd= delete(X, Y), jump_loop.
+// default
+execution_default @@
+op_insert(P), op_search(Q), op_delete(R), opcode(S, X) :-
+	      P \= S, Q \= S, R \= S, int(X)
+	      | io.print_line(io.stdout, "token is wrong.", io.stdout),
+      	       op_insert(P), op_search(Q), op_delete(R), jump_loop.
+
+// wrong input should be deleted.
+wrong_input @@
+fail(X) :- ground(X) | io.print_line(io.stdout, "error", io.stdout).
+
+// time schedule
+/*
+endtime :- end = time.gettime, $p, @rule.
+start(Time_start), end(Time_end) :- Time = Time_end -. Time_start | time(Time).
+*/
