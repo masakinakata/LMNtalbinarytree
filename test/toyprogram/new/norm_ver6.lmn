@@ -80,7 +80,7 @@ loop(S0, N, I0, Even, Odd) :-
   	   io.read_token(I0, I, S),
   	   loop_number(S, N, I, Even, Odd,opcode(S0)).
 
-//j second input must be number.
+// second input must be number.
 loop_second @@
 loop_number(S0, N, I0, Even, Odd, opcode(Q)) :- N1 = N - 1 |
   		   io.read_token(I0, I, S),
