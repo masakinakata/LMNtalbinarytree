@@ -53,12 +53,6 @@ delete(X,nil,P), output={$p, @rule} :-
 
 /* I/O
  * main is like int main() { .... }
- 
- main -> loop_for_number (this is for loopcount like for(int i=0;i < loopcount; i++) ...)
- -> loop   (this is like "cin << S", insert, search, delete)
- -> loop_number    (this is like "cin << N", 1,2,3,...)
- -> loop_op  (change the ("insert", number) -> insert(number)
- -> loop  (while loopcount is over 0)
 */ 
 
 main.
@@ -86,40 +80,37 @@ loop_number(S0, N, I0, Even, Odd, opcode(Q)) :- N1 = N - 1 |
   		   io.read_token(I0, I, S),
   		   loop_op(S, N1, I, Even, Odd, opcode(Q, integer.of_str(S0))).
 
-// these atoms are for changing token to atom
-op_insert("insert"), op_search("search"), op_delete("delete").
-
 // change "insert" and number N -> insert(N) and so on.
 // switch { case : ... default: ...}
 execution_insert_even @@
-op_insert(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 == 0
-        | op_insert(P), loop(S, N, I, insert(X, Even), Odd). 
+loop_op(S, N, I, Even, Odd, opcode("insert", X)) :-
+	X mod 2 == 0
+        | loop(S, N, I, insert(X, Even), Odd). 
 
 execution_insert_odd @@
-op_insert(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 \== 0
-        | op_insert(P), loop(S, N, I, Even, insert(X, Odd)). 
+loop_op(S, N, I, Even, Odd, opcode("insert", X)) :-
+	X mod 2 \== 0
+        | loop(S, N, I, Even, insert(X, Odd)). 
 
 execution_search_even @@
-op_search(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 == 0
-        | op_search(P), loop(S, N, I, search(X, Even), Odd). 
+loop_op(S, N, I, Even, Odd, opcode("search", X)) :-
+	X mod 2 == 0
+        | loop(S, N, I, search(X, Even), Odd). 
 
 execution_search_odd @@
-op_search(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 \== 0
-        | op_insert(P), loop(S, N, I, Even, search(X, Odd)). 
+loop_op(S, N, I, Even, Odd, opcode("search", X)) :-
+	X mod 2 \== 0
+        | loop(S, N, I, Even, search(X, Odd)). 
 
 execution_delete_even @@
-op_delete(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 == 0
-        | op_delete(P), loop(S, N, I, delete(X, Even), Odd). 
+loop_op(S, N, I, Even, Odd, opcode("delete", X)) :-
+	X mod 2 == 0
+        | loop(S, N, I, delete(X, Even), Odd). 
 
 execution_delte_odd @@
-op_delete(P), loop_op(S, N, I, Even, Odd, opcode(Q, X)) :-
-	P = Q, X mod 2 \== 0
-        | op_delete(P), loop(S, N, I, Even, delete(X, Odd)). 
+loop_op(S, N, I, Even, Odd, opcode("delete", X)) :-
+        X mod 2 \== 0
+        | loop(S, N, I, Even, delete(X, Odd)). 
 
 execution_default @@
 op_insert(P), op_search(Q), op_delete(R), loop_op(S0, N, I, Even, Odd, opcode(S, X)) :-
@@ -127,6 +118,7 @@ op_insert(P), op_search(Q), op_delete(R), loop_op(S0, N, I, Even, Odd, opcode(S,
 	      | io.print_line(io.stdout, "token is wrong.", io.stdout),
       	       op_insert(P), op_search(Q), op_delete(R),
 		loop(S0, N, I, Even, Odd).
+
 // wrong input should be deleted.
 wrong_input @@
 fail(X) :- ground(X) | io.print_line(io.stdout, "error", io.stdout).
